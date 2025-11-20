@@ -12,14 +12,28 @@ interface InvoiceFormProps {
 }
 
 const PREDEFINED_SERVICES = [
-  { name: 'पेंटिंग (Painting)', defaultRate: 12 },
-  { name: 'पुट्टी (Putty)', defaultRate: 8 },
-  { name: 'पॉलिश (Polish)', defaultRate: 25 },
-  { name: 'POP False Ceiling', defaultRate: 45 },
+  // Rate Card Items (Marathi + English)
+  { name: 'एस स्पार्क (Ace Spark)', defaultRate: 13 },
+  { name: 'एस इमल्शन (Ace Emulsion)', defaultRate: 15 },
+  { name: 'अपिक्स इमल्शन (Apex Emulsion)', defaultRate: 17 },
+  { name: 'अपिक्स अल्टिमा (Apex Ultima)', defaultRate: 20 },
+  { name: 'अल्टिमा प्रोटेक (Ultima Protek)', defaultRate: 22 },
+  { name: 'डॅम्प प्रूफ (Dam Proof)', defaultRate: 14 },
+  { name: 'ग्रील ऑईल पेंट (Grill Oil Paint)', defaultRate: 40 },
+  { name: 'साफसफाई (Cleaning)', defaultRate: 4 },
+  
+  // Other Common Services
+  { name: 'साईड काम (Side Work)', defaultRate: 0 }, // Added Side Work
+  { name: 'इंटेरिअर पेंटिंग (Interior Painting)', defaultRate: 12 },
+  { name: 'पुट्टी २ कोट (Putty 2 Coat)', defaultRate: 12 },
+  { name: 'पॉलिश काम (Polish Work)', defaultRate: 35 },
+  { name: 'पीओपी फॉल्स सीलिंग (POP False Ceiling)', defaultRate: 45 },
   { name: 'वॉटरप्रूफिंग (Waterproofing)', defaultRate: 18 },
-  { name: 'टेक्चर (Texture)', defaultRate: 20 },
+  { name: 'टेक्चर डिझाईन (Texture Design)', defaultRate: 25 },
   { name: 'रॉयल प्ले (Royal Play)', defaultRate: 35 },
-  { name: 'डॅम्प प्रूफ (Damp Proof)', defaultRate: 22 },
+  
+  // Default "Other Work" item
+  { name: 'इतर कामे (Other Work)', defaultRate: 0 },
 ];
 
 const UNITS = ['Sq.ft', 'Nos', 'R.ft', 'Lump', 'Brass'];
@@ -74,7 +88,7 @@ const AIModal: React.FC<{ isOpen: boolean; onClose: () => void; onConfirm: (text
 };
 
 /**
- * Service Selector Card with Dropdown and Custom Work
+ * Service Selector
  */
 const ServiceSelector: React.FC<{ onAdd: (name: string, rate: number) => void; onAIMagic: () => void }> = ({ onAdd, onAIMagic }) => {
   const [isCustom, setIsCustom] = useState(false);
@@ -89,11 +103,9 @@ const ServiceSelector: React.FC<{ onAdd: (name: string, rate: number) => void; o
         setIsCustom(true);
         setCustomName('');
     } else if (val) {
-        // Find service
         const service = PREDEFINED_SERVICES.find(s => s.name === val);
         if (service) {
             onAdd(service.name, service.defaultRate);
-            // Reset selection after adding to allow re-adding or adding others
             setSelectedService('');
             setIsCustom(false);
         }
@@ -111,7 +123,6 @@ const ServiceSelector: React.FC<{ onAdd: (name: string, rate: number) => void; o
 
   return (
     <div className="space-y-4">
-      {/* Dropdown Selector */}
       <div className="bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
          <div className="flex items-center justify-between mb-3 px-1">
             <label className="text-sm font-bold text-slate-500 uppercase tracking-wide">कामे निवडा (Add Service)</label>
@@ -132,16 +143,15 @@ const ServiceSelector: React.FC<{ onAdd: (name: string, rate: number) => void; o
                       {s.name}
                    </option>
                 ))}
-                <option value="custom" className="font-bold text-brand-600">+ इतर कामे (Other Work)</option>
+                <option value="custom" className="font-bold text-brand-600">+ नवीन काम जोडा (Add New / Custom)</option>
              </select>
              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none w-6 h-6" />
          </div>
       </div>
 
-      {/* Custom / Other Work Input Area */}
       {isCustom && (
          <div className="bg-white p-5 rounded-3xl shadow-sm border border-brand-100 animate-in fade-in slide-in-from-top-2">
-            <label className="block text-xs font-bold text-brand-600 mb-2 uppercase">इतर कामाचे नाव (Other Work)</label>
+            <label className="block text-xs font-bold text-brand-600 mb-2 uppercase">नवीन कामाचे नाव (Custom Work Name)</label>
             <div className="flex gap-3">
                <input 
                   autoFocus
@@ -149,7 +159,7 @@ const ServiceSelector: React.FC<{ onAdd: (name: string, rate: number) => void; o
                   placeholder="उदा: साफसफाई, ग्रील पेंटिंग..." 
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
-                  className="flex-1 text-lg font-bold border-b-2 border-brand-500 outline-none py-2 bg-transparent placeholder:text-slate-300"
+                  className="flex-1 text-lg font-normal border-b-2 border-brand-500 outline-none py-2 bg-transparent placeholder:text-slate-300"
                />
                <button 
                   onClick={handleCustomAdd}
@@ -172,7 +182,7 @@ const ServiceSelector: React.FC<{ onAdd: (name: string, rate: number) => void; o
 };
 
 /**
- * Enhanced Cart Item Row
+ * Cart Item Row
  */
 const CartItemRow: React.FC<{ 
   item: LineItem; 
@@ -185,8 +195,6 @@ const CartItemRow: React.FC<{
 
   return (
     <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 mb-4 relative overflow-hidden transition-all">
-      
-      {/* Top Row: Title & Delete */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1 pr-2">
            <input 
@@ -214,10 +222,7 @@ const CartItemRow: React.FC<{
         </button>
       </div>
 
-      {/* Controls Grid */}
       <div className="grid grid-cols-[1fr_auto_1fr] gap-4 items-end bg-slate-50 rounded-2xl p-3">
-         
-         {/* Rate */}
          <div className="flex flex-col">
              <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1">Rate (दर)</label>
              <div className="bg-white rounded-xl border border-slate-200 flex items-center px-3 py-2 focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-100 transition-all shadow-sm">
@@ -233,10 +238,8 @@ const CartItemRow: React.FC<{
              </div>
          </div>
 
-         {/* Divider */}
          <div className="text-slate-300 font-light text-2xl pb-2">×</div>
 
-         {/* Quantity */}
          <div className="flex flex-col items-end">
              <label className="text-[10px] font-bold text-slate-400 uppercase mr-1 mb-1">Qty (नग)</label>
              <div className="flex items-center gap-2">
@@ -251,12 +254,10 @@ const CartItemRow: React.FC<{
          </div>
       </div>
 
-      {/* Total Footer */}
       <div className="flex justify-between items-center mt-3 px-2">
           <span className="text-xs font-bold text-slate-400 uppercase">Total Amount</span>
           <span className="text-xl font-extrabold text-slate-800">₹{item.amount.toLocaleString()}</span>
       </div>
-
     </div>
   );
 };
@@ -265,7 +266,6 @@ const CartItemRow: React.FC<{
  * Main Form
  */
 export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, onSave, onPreview, onBack }) => {
-  const bottomRef = useRef<HTMLDivElement>(null);
   const [isAIMagicOpen, setIsAIMagicOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -293,7 +293,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     
-    recognition.lang = 'en-IN'; // Default to Indian English/Hindi/Marathi mix
+    recognition.lang = 'en-IN'; 
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
@@ -303,13 +303,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
       setIsListening(false);
     };
 
-    recognition.onerror = () => {
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
 
     recognition.start();
   };
@@ -324,7 +319,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
       amount: rate * 1
     };
     setInvoice(prev => ({ ...prev, items: [...prev.items, newItem] }));
-    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    // Removed auto-scroll to bottom to let user see the new card immediately
   };
 
   const handleAIMagic = async (text: string) => {
@@ -343,7 +338,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
         amount: 0
       }));
       setInvoice(prev => ({ ...prev, items: [...prev.items, ...newItems] }));
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     }
   };
 
@@ -369,7 +363,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
 
   const handleWhatsApp = () => {
     onSave();
-    onPreview(); // Switch to preview to show sharing options
+    onPreview();
   };
 
   return (
@@ -548,7 +542,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
            />
         </div>
 
-        <div ref={bottomRef} className="h-8" />
+        <div className="h-8" />
 
       </div>
 

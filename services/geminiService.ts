@@ -3,7 +3,15 @@ import { GoogleGenAI, Type } from "@google/genai";
 // Safely access API Key to prevent "process is not defined" crashes in browser
 const getApiKey = () => {
   try {
-    // Check if process is defined before accessing env
+    // Check for Vite environment variable
+    // @ts-ignore
+    if (typeof import.meta !== "undefined" && import.meta.env) {
+      // @ts-ignore
+      const key = import.meta.env.VITE_API_KEY || import.meta.env.API_KEY;
+      if (key) return key;
+    }
+    
+    // Check for process environment variable (Node/Webpack/Next.js)
     if (typeof process !== "undefined" && process.env) {
       return process.env.API_KEY || "";
     }
@@ -18,7 +26,7 @@ const apiKey = getApiKey();
 const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy_key_to_prevent_crash' });
 
 export const parseWorkDescription = async (description: string): Promise<{ description: string; quantity: number }[]> => {
-  if (!apiKey) {
+  if (!apiKey || apiKey === 'dummy_key_to_prevent_crash') {
     console.warn("API Key is missing. AI features disabled.");
     return [];
   }
