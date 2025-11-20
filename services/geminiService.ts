@@ -1,10 +1,27 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
+// Safely access API Key to prevent "process is not defined" crashes in browser
+const getApiKey = () => {
+  try {
+    // Check if process is defined before accessing env
+    if (typeof process !== "undefined" && process.env) {
+      return process.env.API_KEY || "";
+    }
+  } catch (e) {
+    console.warn("Environment variable access failed", e);
+  }
+  return "";
+};
+
+const apiKey = getApiKey();
+// Initialize only if key exists, otherwise handle gracefully in function
+const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy_key_to_prevent_crash' });
 
 export const parseWorkDescription = async (description: string): Promise<{ description: string; quantity: number }[]> => {
-  if (!apiKey) return [];
+  if (!apiKey) {
+    console.warn("API Key is missing. AI features disabled.");
+    return [];
+  }
 
   try {
     const response = await ai.models.generateContent({
