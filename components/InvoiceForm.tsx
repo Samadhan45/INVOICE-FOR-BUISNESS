@@ -224,6 +224,7 @@ const CartItemRow: React.FC<{
                  <span className="text-slate-400 font-bold mr-1">₹</span>
                  <input 
                     type="number"
+                    inputMode="decimal"
                     value={item.rate || ''}
                     onChange={(e) => onUpdate(item.id, 'rate', parseFloat(e.target.value) || 0)}
                     className="w-full font-bold text-lg text-slate-900 outline-none bg-transparent p-0"
@@ -429,6 +430,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
                         <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Mobile</label>
                         <input 
                             type="tel"
+                            inputMode="numeric"
                             placeholder="नंबर"
                             value={invoice.client.phone}
                             onChange={(e) => setInvoice({...invoice, client: {...invoice.client, phone: e.target.value}})}
@@ -488,7 +490,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
                          <div className="flex items-center bg-slate-50 rounded-lg px-3 py-1 border border-slate-200 focus-within:border-brand-300 transition-colors">
                             <span className="text-slate-400 text-sm mr-1">- ₹</span>
                             <input 
-                                type="number" 
+                                type="number"
+                                inputMode="decimal"
                                 value={invoice.discount === 0 ? '' : invoice.discount} 
                                 onChange={e => setInvoice({...invoice, discount: parseFloat(e.target.value) || 0})}
                                 className="w-20 bg-transparent text-right font-bold text-slate-800 outline-none"
@@ -512,6 +515,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, setInvoice, o
                             <IndianRupee className="w-5 h-5 text-emerald-600 mr-1" />
                             <input 
                                 type="number"
+                                inputMode="decimal"
                                 value={invoice.advance === 0 ? '' : invoice.advance}
                                 onChange={e => setInvoice({...invoice, advance: parseFloat(e.target.value) || 0})}
                                 className="w-full bg-transparent font-bold text-emerald-800 text-2xl outline-none placeholder:text-emerald-300"

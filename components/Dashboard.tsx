@@ -8,9 +8,9 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ invoices, onNavigate }) => {
-  // Stats
+  // Stats - Defensive calculation
   const totalRevenue = invoices.reduce((sum, i) => sum + (i.advance || 0), 0); // Cash in hand
-  const totalPending = invoices.reduce((sum, i) => sum + i.balance, 0);
+  const totalPending = invoices.reduce((sum, i) => sum + (i.balance || 0), 0);
 
   const MenuButton = ({ title, sub, icon: Icon, onClick, color }: any) => (
     <button 

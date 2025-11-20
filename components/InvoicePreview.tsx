@@ -35,6 +35,9 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({ invoice, onEdit 
   const handleSharePdf = async () => {
     setIsSharing(true);
     try {
+      // IMPORTANT: Scroll to top to prevent PDF cutoff/glitches
+      window.scrollTo(0, 0);
+      
       const element = document.getElementById('invoice-pdf-content');
       if (!element) return;
       
